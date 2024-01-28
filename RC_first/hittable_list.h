@@ -26,7 +26,7 @@ public:
     void add(shared_ptr<hittable> object) {
         objects.push_back(object);
     }
-    //判断光线与物体列表的碰撞结果，最终返回的值：bool：是否击中物体
+    //判断一条光线与世界物体列表的碰撞结果，最终返回的值：bool：是否击中物体
                                              //引用：击中的信息rec
     bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
         hit_record temp_rec;
