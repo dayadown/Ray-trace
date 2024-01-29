@@ -88,7 +88,8 @@ private:
             return color(0, 0, 0);
 
         //调用world类（一个可被击中类的集合类）的hit函数
-        if (world.hit(r, interval(0, infinity), rec)) {
+        //interval(0.001, infinity)，忽略距离当前光线起点特别近的交点，可能是由于计算精度的错误点
+        if (world.hit(r, interval(0.001, infinity), rec)) {
            // return 0.5 * (rec.normal + color(1, 1, 1));
             vec3 direction = random_on_hemisphere(rec.normal);
             //递归漫反射，递归10次以内，返回递归颜色的50%(材质特性)
