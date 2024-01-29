@@ -11,6 +11,7 @@ public:
     double aspect_ratio = 1.0;  // Ratio of image width over height，宽高比
     int image_width = 100;  // Rendered image width in pixel count，渲染的图像的宽
     int samples_per_pixel = 10;   // Count of random samples for each pixel，每个像素的样本数
+    int max_depth = 10;   // Maximum number of ray bounces into scene 最大递归深度
 
     //渲染函数，相机对每个像素发射光线，并获取返回的颜色，最后将该颜色渲染在像素上
     void render(const hittable& world) {
@@ -25,7 +26,7 @@ public:
                 //第三重循环，循环计算每个像素每个样本的值并做加和
                 for (int sample = 0; sample < samples_per_pixel; ++sample) {
                     ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, world);
+                    pixel_color += ray_color(r, max_depth, world);
                 }
                 write_color(std::cout, pixel_color, samples_per_pixel);
             }
@@ -79,11 +80,19 @@ private:
     * 一根光线与世界中的物体相交而得到的颜色
     */
 
-    color ray_color(const ray& r, const hittable& world) {
+    color ray_color(const ray& r, int depth, const hittable& world) const {
         hit_record rec;//传入hit函数时为引用，记录击中点的信息
+
+        // If we've exceeded the ray bounce limit, no more light is gathered.
+        if (depth <= 0)
+            return color(0, 0, 0);
+
         //调用world类（一个可被击中类的集合类）的hit函数
         if (world.hit(r, interval(0, infinity), rec)) {
-            return 0.5 * (rec.normal + color(1, 1, 1));
+           // return 0.5 * (rec.normal + color(1, 1, 1));
+            vec3 direction = random_on_hemisphere(rec.normal);
+            //递归漫反射，递归10次以内，返回递归颜色的50%(材质特性)
+            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
         }
 
 

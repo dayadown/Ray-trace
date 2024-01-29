@@ -45,6 +45,15 @@ public:
     double length_squared() const {
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
+
+    //生成随机光束的两个函数，分别为随机和固定范围
+    static vec3 random() {
+        return vec3(random_double(), random_double(), random_double());
+    }
+
+    static vec3 random(double min, double max) {
+        return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
 };
 
 // point3 is just an alias for vec3, but useful for geometric clarity in the code.
@@ -96,3 +105,28 @@ inline vec3 cross(const vec3& u, const vec3& v) {
 inline vec3 unit_vector(vec3 v) {//标准化
     return v / v.length();
 }
+
+//返回三维单位球内部的一个随机向量(生成表面点起始的随机向量)
+inline vec3 random_in_unit_sphere() {
+    while (true) {
+        auto p = vec3::random(-1, 1);
+        if (p.length_squared() < 1)
+            return p;
+    }
+}
+//接上一个函数，将返回值单位化
+inline vec3 random_unit_vector() {
+    return unit_vector(random_in_unit_sphere());
+}
+
+//矫正表面随机向量，根据法线方向
+inline vec3 random_on_hemisphere(const vec3& normal) {
+    vec3 on_unit_sphere = random_unit_vector();
+    if (dot(on_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
+        return on_unit_sphere;
+    else // invert
+        return -on_unit_sphere;
+}
+
+
+
