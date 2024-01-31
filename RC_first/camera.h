@@ -96,7 +96,9 @@ private:
 
             // 优化，法向加一个随机的单位向量得到的至少是一个与法向同一边的向量
             vec3 direction = rec.normal + random_unit_vector();
-            //递归漫反射，递归10次以内，返回递归颜色的50%(材质特性)
+
+
+            // 递归漫反射，递归10次以内，返回递归颜色的50%(材质特性)
             return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
         }
 

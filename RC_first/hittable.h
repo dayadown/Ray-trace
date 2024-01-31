@@ -1,10 +1,16 @@
 #pragma once
 #include "ray.h"
+#include "rtweekend.h"
+
+// 先声明，避免循环引用
+class material;
+
 //击中的记录类，分别记录击中的点，点的法向，及相对于光线延申的t
 class hit_record {
 public:
     point3 p;
     vec3 normal;
+    shared_ptr<material> mat;
     double t;
     bool front_face;
 
