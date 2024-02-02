@@ -3,6 +3,7 @@
 #include "rtweekend.h"
 #include "color.h"
 #include "hittable.h"
+#include "material.h"
 #include <iostream>
 class camera {
 public:
@@ -95,11 +96,19 @@ private:
             // vec3 direction = random_on_hemisphere(rec.normal);
 
             // 优化，法向加一个随机的单位向量得到的至少是一个与法向同一边的向量
-            vec3 direction = rec.normal + random_unit_vector();
+            // vec3 direction = rec.normal + random_unit_vector();
 
 
             // 递归漫反射，递归10次以内，返回递归颜色的50%(材质特性)
-            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+            // return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+
+
+
+            ray scattered;
+            color attenuation;
+            if (rec.mat->scatter(r, rec, attenuation, scattered))// 调用击中点的材质类反射出一条光线（得到光线与颜色）
+                return attenuation * ray_color(scattered, depth - 1, world);// 递归追踪,保留本层递归材质的颜色
+            return color(0, 0, 0);
         }
 
 

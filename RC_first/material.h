@@ -12,11 +12,12 @@ public:
 };
 
 
-// 建模光散射和反射率
+// 建模光散射和反射率（粗糙表面）
 class lambertian : public material {
 public:
     lambertian(const color& a) : albedo(a) {}
 
+    // 通过传引用返回
     bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered)
         const override {
         // 产生随机散射方向
@@ -29,6 +30,24 @@ public:
 
         
         scattered = ray(rec.p, scatter_direction);
+        attenuation = albedo;
+        return true;
+    }
+
+private:
+    color albedo;
+};
+
+
+// 金属表面
+class metal : public material {
+public:
+    metal(const color& a) : albedo(a) {}
+
+    bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered)
+        const override {
+        vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
+        scattered = ray(rec.p, reflected);
         attenuation = albedo;
         return true;
     }
