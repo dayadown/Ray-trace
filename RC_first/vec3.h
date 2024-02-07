@@ -141,3 +141,13 @@ vec3 reflect(const vec3& v, const vec3& n) {
 
 
 
+// 已知折射率的比值，法线，入射光线。求得折射光线（入射，折射，法线均为单位向量）
+inline vec3 refract(const vec3& uv, const vec3& n, double etai_over_etat) {
+    auto cos_theta = fmin(dot(-uv, n), 1.0);
+    vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+    vec3 r_out_parallel = -sqrt(fabs(1.0 - r_out_perp.length_squared())) * n;
+    return r_out_perp + r_out_parallel;
+}
+
+
+
